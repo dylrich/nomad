@@ -240,6 +240,9 @@ func (c *cniNetworkConfigurator) Setup(ctx context.Context, alloc *structs.Alloc
 		c.logger.Debug("received result from CNI", "result", string(resultJSON))
 	}
 
+	resultJSON, _ := json.Marshal(res)
+	fmt.Println("ERROR NETWORK TEST", string(resultJSON))
+
 	allocNet, err := c.cniToAllocNet(res)
 	if err != nil {
 		return nil, err
