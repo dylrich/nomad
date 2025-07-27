@@ -240,9 +240,6 @@ func (c *cniNetworkConfigurator) Setup(ctx context.Context, alloc *structs.Alloc
 		c.logger.Debug("received result from CNI", "result", string(resultJSON))
 	}
 
-	resultJSON, _ := json.Marshal(res)
-	fmt.Println("ERROR NETWORK TEST", string(resultJSON))
-
 	allocNet, err := c.cniToAllocNet(res)
 	if err != nil {
 		return nil, err
@@ -496,7 +493,7 @@ func (c *cniNetworkConfigurator) cniToAllocNet(res *cni.Result) (*structs.AllocN
 
 	// If no IP address was found, use the first interface with an address
 	// found as a fallback
-	if netStatus.Address == "" {
+	if netStatus.Address == "" && netStatus.AddressIPv6 == "" {
 		setStatus(false)
 		c.logger.Debug("no sandbox interface with an address found CNI result, using first available",
 			"interface", netStatus.InterfaceName,
@@ -505,7 +502,7 @@ func (c *cniNetworkConfigurator) cniToAllocNet(res *cni.Result) (*structs.AllocN
 	}
 
 	// If no IP address could be found, return an error
-	if netStatus.Address == "" {
+	if netStatus.Address == "" && netStatus.AddressIPv6 == "" {
 		return nil, fmt.Errorf("failed to configure network: no interface with an address")
 
 	}
